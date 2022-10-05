@@ -25,13 +25,13 @@ proc addVecF uses edx ecx, vec1, vec2
         fadd    dword [ecx]
         fstp    dword [ecx]
 
+        fld     dword [edx+4]
+        fadd    dword [ecx+4]
+        fstp    dword [ecx+4]
+
         fld     dword [edx+8]
         fadd    dword [ecx+8]
         fstp    dword [ecx+8]
-
-        fld     dword [edx+16]
-        fadd    dword [ecx+16]
-        fstp    dword [ecx+16]
 
         ret
 endp
@@ -87,7 +87,7 @@ endp
 
 
 
-proc    normalizeVecD, vec
+proc    normalizeVecD uses ebx ecx edx, vec
         local sum: QWORD
 
         mov     ebx, [vec]
@@ -104,6 +104,7 @@ proc    normalizeVecD, vec
 
         faddp
         faddp
+        fsqrt
         fstp    qword [sum]
 
         mov     ecx, 3
@@ -120,7 +121,7 @@ proc    normalizeVecD, vec
 endp
 
 
-proc    normalizeVecF, vec
+proc    normalizeVecF uses ebx ecx edx, vec
         local sum: DWORD
 
         mov     ebx, [vec]
@@ -132,11 +133,13 @@ proc    normalizeVecF, vec
         fmul    dword [ebx+edx]
         fmul    dword [ebx+edx]
 
-        add     edx, 8
+        add     edx, 4
         loop    .CountLoop
 
         faddp
         faddp
+        fsqrt
+
         fstp    dword [sum]
 
         mov     ecx, 3
@@ -146,8 +149,82 @@ proc    normalizeVecF, vec
         fdiv    dword [sum]
         fstp    dword [ebx+edx]
 
-        add     ebx, 8
+        add     edx, 4
         loop    .DivLoop
 
         ret
 endp
+
+proc    Stars.GetTriangle, vec
+        local       stage: DWORD
+
+        mov     ebx, [vec]
+        mov     [stage], 0
+        push    100.0
+
+.StageLoop:
+
+        mov     edx, 0
+        mov     ecx, 0
+.LoadLoop:
+
+
+        cmp     [stage], ecx
+        jne     .LoadZ
+.Load100:
+        fld     dword [esp]
+        jmp     .EndLoad
+.LoadZ:
+        fldz
+.EndLoad:
+        fsub    dword [ebx+edx]
+        fstp    dword [bufVec+edx]
+
+
+        add     edx, 4
+        inc     ecx
+        cmp     ecx, 3
+        jb      .LoadLoop
+        ;vector loaded
+
+        stdcall normalizeVecF, bufVec
+        mov     ecx, 3
+        mov     edx, 0
+        push    7.0
+.divLoop:
+        fld     dword [bufVec+edx]
+        fdiv    dword [esp]
+        fstp    dword [bufVec+edx]
+
+        add     edx, 4
+        loop    .divLoop
+        pop     eax
+        ;vector normalized and -scaled
+
+        stdcall addVecF, bufVec, ebx
+        stdcall normalizeVecF, bufVec
+        stdcall mulVecF, bufVec, 100.0
+
+
+        ;copy to local mem
+        push    ds
+        pop     es
+        mov     esi, bufVec
+
+        mov     ecx, [stage]
+        imul    ecx, 12
+        lea     edi, [vertice+ecx]
+
+        mov     ecx, 3
+        rep     movsd
+        ;copy to local mem
+
+        inc     [stage]
+        cmp     [stage], 3
+        jb      .StageLoop
+
+        pop     eax
+
+        ret
+endp
+

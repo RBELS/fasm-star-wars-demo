@@ -6,7 +6,7 @@ entry start
 
 FOV             =       50.0
 Z_NEAR          =       0.1
-Z_FAR           =       100.0
+Z_FAR           =       150.0
 STARS_COUNT     =       1024
 
 include 'win32ax.inc'
@@ -24,8 +24,13 @@ section '.text' code readable executable
         invoke  LoadCursor,0,IDC_ARROW
         mov     [wc.hCursor],eax
         invoke  RegisterClass,wc
-        invoke  CreateWindowEx,0,_class,_title,WS_VISIBLE+WS_OVERLAPPEDWINDOW+WS_CLIPCHILDREN+WS_CLIPSIBLINGS,100,100,800+100,100+600,NULL,NULL,[wc.hInstance],NULL
+        invoke  CreateWindowEx,0,_class,_title,WS_VISIBLE+WS_OVERLAPPEDWINDOW+WS_CLIPCHILDREN+WS_CLIPSIBLINGS,0,0,1600+100,100+1080,NULL,NULL,[wc.hInstance],NULL
         mov     [hwnd],eax
+
+        stdcall Random.Init
+
+        stdcall Stars.Init
+
 
   msg_loop:
         invoke  GetMessage,msg,NULL,0,0
@@ -93,8 +98,6 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
         invoke  glShadeModel, GL_SMOOTH
         invoke  glHint, GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
 
-        stdcall Stars.Init
-
         xor     eax, eax
 
         jmp     .finish
@@ -131,12 +134,29 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
         invoke  glClear,GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
 
-
         invoke  glMatrixMode, GL_PROJECTION
         invoke  glLoadIdentity
         invoke  gluPerspective, double FOV, double [aspect], double Z_NEAR, double Z_FAR
 
-        stdcall drawDestroyer
+        stdcall Stars.GetTriangle, testStar
+
+        invoke  glMatrixMode, GL_MODELVIEW
+        invoke  glLoadIdentity
+        invoke  gluLookAt, double 0.0, double 0.0, double 0.0,\
+                           double 57.8, double 57.8, double 57.8,\
+                           double 0.0, double 1.0, double 0.0
+
+        invoke  glEnableClientState, GL_VERTEX_ARRAY
+
+        invoke  glVertexPointer, 3, GL_FLOAT, 3*4, vertice
+        invoke  glColor3f, 1.0, 1.0, 1.0
+
+        invoke  glDrawArrays, GL_TRIANGLES, 0, 3
+
+        invoke  glDisableClientState, GL_VERTEX_ARRAY
+
+
+        ;stdcall drawDestroyer
         ;stdcall  drawStarFixed, point
         ;stdcall  drawStarsFixed, point, dword 1
 .wKey:
@@ -170,48 +190,30 @@ proc    Stars.Init
         mov     ecx, STARS_COUNT
 .GenLoop:
         stdcall genVecF, edx
+        stdcall normalizeVecF, edx
+        stdcall mulVecF, edx, 10.0
 
-
-
+        add     edx, 3*4
         loop    .GenLoop
 
         ret
 endp
 
+
 proc    drawDestroyer
 
         invoke  glEnable, GL_NORMALIZE
-        spotExp equ 70.1
+
         invoke  glEnable, GL_LIGHTING
-        ;invoke  glEnable, GL_LIGHT1
-        ;invoke  glLightfv, GL_LIGHT1, GL_DIFFUSE, light1Diffuse
-        ;invoke  glLightf, GL_LIGHT1, GL_SPOT_CUTOFF, 90.0
-        ;invoke  glLightf, GL_LIGHT1, GL_SPOT_EXPONENT, spotExp
-
-        ;invoke  glEnable, GL_LIGHT2
-        ;invoke  glLightfv, GL_LIGHT2, GL_DIFFUSE, light1Diffuse
-        ;invoke  glLightf, GL_LIGHT2, GL_SPOT_CUTOFF, 90.0
-        ;invoke  glLightf, GL_LIGHT2, GL_SPOT_EXPONENT, spotExp
-
-        ;invoke  glEnable, GL_LIGHT3
-        ;invoke  glLightfv, GL_LIGHT3, GL_DIFFUSE, light1Diffuse
-        ;invoke  glLightf, GL_LIGHT3, GL_SPOT_CUTOFF, 90.0
-        ;invoke  glLightf, GL_LIGHT3, GL_SPOT_EXPONENT, spotExp
-
         invoke  glEnable, GL_LIGHT0
         invoke  glLightfv, GL_LIGHT0, GL_DIFFUSE, light0Diffuse
-
 
 
         invoke  glMatrixMode, GL_MODELVIEW
         invoke  glLoadIdentity
 
-
-
-        ;invoke glScalef, 1.0, 1.0, 1.0
-
         invoke  gluLookAt, double [posVec.x], double [posVec.y], double [posVec.z],\
-                           double 0, double 0, double 0,\
+                           double 0, double 0.0, double 0.0,\
                            double 0.0, double 1.0, double 0.0
 
 
@@ -227,20 +229,17 @@ proc    drawDestroyer
 
         invoke  glEnableClientState, GL_VERTEX_ARRAY
         invoke  glEnableClientState, GL_NORMAL_ARRAY
-        ;invoke  glEnableClientState, GL_COLOR_ARRAY
 
 
 
-        ;invoke  glColor3f, 0.4, 0.2, 0.5
         invoke  glVertexPointer, 3, GL_FLOAT, 3*4, vertices+16
         invoke  glNormalPointer, GL_FLOAT, 3*4, normals+16
         invoke  glColor3f, 0.5, 0.5, 0.5
-        ;invoke  glColorPointer, 3, GL_FLOAT, 3*4, colors
+
         invoke  glDrawArrays, GL_TRIANGLES, 0, (verticesEnd-vertices-16)/4/3
 
         invoke  glDisableClientState, GL_VERTEX_ARRAY
         invoke  glDisableClientState, GL_NORMAL_ARRAY
-        ;invoke  glDisableClientState, GL_COLOR_ARRAY
 
         ret
 
@@ -266,7 +265,7 @@ msg     MSG
 rc      RECT
 pfd     PIXELFORMATDESCRIPTOR
 
-aspect  dq     1.33333
+aspect  dq     1.48148148
 
 clock   dd ?
 
@@ -278,8 +277,8 @@ prevTime        dd      0.0
 
 posVec:
 .x    dq      0.0
-.y    dq      -2.0
-.z    dq      -30.0
+.y    dq      0.0
+.z    dq      0.0
 
 frontVec:
 .x    dq      0.0
@@ -292,8 +291,8 @@ watchPointVec:
 .z    dq      0.0
 
 upVec:
-.x    dq      0.0
-.y    dq      1.0
+.x    dq      1.0
+.y    dq      0.0
 .z    dq      0.0
 
 destroyerPos:
@@ -322,7 +321,15 @@ light3Position  dd              -52.0, 0.0, -190.0, 1.0
 light1Ambient   dd              0.0, 0.0, 1.0, 1.0
 light1Diffuse   dd              0.1, 0.82, 1.0, 1.0
 
+testStar        dd              57.8, 57.8, 57.8
+
 starsdata       dd              3*4*STARS_COUNT dup (?)
+
+bufVec          dd      3 dup (?)
+vertice         dd      1000.0, 0.0, 0.0,\
+                        100.0, 0.5, 0.0,\
+                        100.0, 0.0, 0.5
+
 
 include 'random\random.d'
 
@@ -376,39 +383,42 @@ include 'random\random.d'
 
 
 
-section '.idata' import data readable writeable
+section '.idata' data import readable writeable
 
-  library kernel,'KERNEL32.DLL',\
-          user,'USER32.DLL',\
-          gdi,'GDI32.DLL',\
+  library kernel,'kernel32.dll',\
+          user,'user32.dll',\
+          gdi,'gdi32.dll',\
           opengl,'OPENGL32.DLL',\
           glu,'GLU32.DLL'
+
+
 
   import kernel,\
          GetModuleHandle,'GetModuleHandleA',\
          GetTickCount,'GetTickCount',\
-         ExitProcess,'ExitProcess'
+         ExitProcess,'ExitProcess',\
+         GetSystemTimeAsFileTime, 'GetSystemTimeAsFileTime'
 
   import user,\
-         RegisterClass,'RegisterClassA',\
-         CreateWindowEx,'CreateWindowExA',\
-         DefWindowProc,'DefWindowProcA',\
-         GetMessage,'GetMessageA',\
-         TranslateMessage,'TranslateMessage',\
-         DispatchMessage,'DispatchMessageA',\
-         LoadCursor,'LoadCursorA',\
-         LoadIcon,'LoadIconA',\
-         GetClientRect,'GetClientRect',\
-         GetDC,'GetDC',\
-         ReleaseDC,'ReleaseDC',\
-         PostQuitMessage,'PostQuitMessage',\
-         GetKeyState, 'GetKeyState'
+          TranslateMessage,'TranslateMessage',\
+          RegisterClass,'RegisterClassA',\
+          CreateWindowEx,'CreateWindowExA',\
+          DefWindowProc,'DefWindowProcA',\
+          GetMessage,'GetMessageA',\
+          DispatchMessage,'DispatchMessageA',\
+          LoadCursor,'LoadCursorA',\
+          LoadIcon,'LoadIconA',\
+          GetClientRect,'GetClientRect',\
+          GetDC,'GetDC',\
+          ReleaseDC,'ReleaseDC',\
+          PostQuitMessage,'PostQuitMessage',\
+          GetKeyState, 'GetKeyState'
 
 
-  import gdi,\
-         ChoosePixelFormat,'ChoosePixelFormat',\
-         SetPixelFormat,'SetPixelFormat',\
-         SwapBuffers,'SwapBuffers'
+   import gdi,\
+          ChoosePixelFormat,'ChoosePixelFormat',\
+          SetPixelFormat,'SetPixelFormat',\
+          SwapBuffers,'SwapBuffers'
 
   import opengl,\
          glAccum,'glAccum',\
