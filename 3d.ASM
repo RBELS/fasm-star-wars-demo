@@ -6,8 +6,8 @@ entry start
 
 FOV             =       50.0
 Z_NEAR          =       0.1
-Z_FAR           =       150.0
-STARS_COUNT     =       1024
+Z_FAR           =       250.0
+STARS_COUNT     =       1024*10
 
 include 'win32ax.inc'
 
@@ -29,7 +29,7 @@ section '.text' code readable executable
 
         stdcall Random.Init
 
-        stdcall Stars.Init
+        stdcall Stars.Init, vertice, STARS_COUNT
 
 
   msg_loop:
@@ -98,6 +98,12 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
         invoke  glShadeModel, GL_SMOOTH
         invoke  glHint, GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
 
+        invoke  glMatrixMode, GL_MODELVIEW
+        invoke  glLoadIdentity
+        invoke  gluLookAt, double 20.0, double 20.0, double 20.0,\
+                           double 0.0, double 0.0, double 0.0,\
+                           double 0.0, double 1.0, double 0.0
+
         xor     eax, eax
 
         jmp     .finish
@@ -128,37 +134,32 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
         fstp    [time]
         inc      [ticks]
 
-        stdcall  addVecF, destroyerPos, destroyerV
-
         invoke  glClearColor, 0.0, 0.0, 0.02745, 1.0f
         invoke  glClear,GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
-
 
         invoke  glMatrixMode, GL_PROJECTION
         invoke  glLoadIdentity
         invoke  gluPerspective, double FOV, double [aspect], double Z_NEAR, double Z_FAR
 
-        stdcall Stars.GetTriangle, testStar
-
         invoke  glMatrixMode, GL_MODELVIEW
-        invoke  glLoadIdentity
-        invoke  gluLookAt, double 0.0, double 0.0, double 0.0,\
-                           double 57.8, double 57.8, double 57.8,\
-                           double 0.0, double 1.0, double 0.0
-
-        invoke  glEnableClientState, GL_VERTEX_ARRAY
-
-        invoke  glVertexPointer, 3, GL_FLOAT, 3*4, vertice
-        invoke  glColor3f, 1.0, 1.0, 1.0
-
-        invoke  glDrawArrays, GL_TRIANGLES, 0, 3
-
-        invoke  glDisableClientState, GL_VERTEX_ARRAY
 
 
-        ;stdcall drawDestroyer
-        ;stdcall  drawStarFixed, point
-        ;stdcall  drawStarsFixed, point, dword 1
+        ;invoke  GetTickCount
+        ;push    eax
+        ;fild    dword [esp]
+        ;fstp    dword [esp]
+        ;pop     eax
+
+        ;invoke  glLoadIdentity
+        invoke  glRotatef, 0.05, 0.0, 1.0, 0.0
+
+
+
+
+
+
+        stdcall Stars.Draw, vertice, STARS_COUNT
+        stdcall drawDestroyer
 .wKey:
 
 .wEnd:
@@ -184,17 +185,38 @@ endp
 
 include 'random\random.c'
 
-proc    Stars.Init
+proc    Stars.Init uses edx ecx, starsData, starsCount
 
-        mov     edx, starsdata
+        mov     edx, [starsData]
         mov     ecx, STARS_COUNT
 .GenLoop:
+        push    cx
         stdcall genVecF, edx
         stdcall normalizeVecF, edx
-        stdcall mulVecF, edx, 10.0
+        stdcall mulVecF, edx, 100.0
+        pop     cx
 
-        add     edx, 3*4
+        add     edx, 12
         loop    .GenLoop
+
+        ret
+endp
+
+proc    Stars.Draw, starsData, starsCount
+
+
+
+        invoke  glPointSize, 1.0
+        invoke  glEnable, GL_POINT_SMOOTH
+        invoke  glEnableClientState, GL_VERTEX_ARRAY
+
+        invoke  glVertexPointer, 3, GL_FLOAT, 0, [starsData]
+        invoke  glColor3f, 1.0, 1.0, 1.0
+
+        invoke  glDrawArrays, GL_POINTS, 0, [starsCount]
+
+        invoke  glDisableClientState, GL_VERTEX_ARRAY
+
 
         ret
 endp
@@ -203,26 +225,15 @@ endp
 proc    drawDestroyer
 
         invoke  glEnable, GL_NORMALIZE
-
         invoke  glEnable, GL_LIGHTING
         invoke  glEnable, GL_LIGHT0
         invoke  glLightfv, GL_LIGHT0, GL_DIFFUSE, light0Diffuse
 
 
-        invoke  glMatrixMode, GL_MODELVIEW
-        invoke  glLoadIdentity
-
-        invoke  gluLookAt, double [posVec.x], double [posVec.y], double [posVec.z],\
-                           double 0, double 0.0, double 0.0,\
-                           double 0.0, double 1.0, double 0.0
-
-
-
-
-        invoke  glTranslatef, [destroyerPos.x], [destroyerPos.y], [destroyerPos.z]
-        invoke  glLightfv, GL_LIGHT1, GL_POSITION, light1Position
-        invoke  glLightfv, GL_LIGHT2, GL_POSITION, light2Position
-        invoke  glLightfv, GL_LIGHT3, GL_POSITION, light3Position
+        ;invoke  glTranslatef, [destroyerPos.x], [destroyerPos.y], [destroyerPos.z]
+        ;invoke  glLightfv, GL_LIGHT1, GL_POSITION, light1Position
+        ;invoke  glLightfv, GL_LIGHT2, GL_POSITION, light2Position
+        ;invoke  glLightfv, GL_LIGHT3, GL_POSITION, light3Position
         invoke  glLightfv, GL_LIGHT0, GL_POSITION, light0Position
 
 
@@ -230,16 +241,16 @@ proc    drawDestroyer
         invoke  glEnableClientState, GL_VERTEX_ARRAY
         invoke  glEnableClientState, GL_NORMAL_ARRAY
 
-
-
         invoke  glVertexPointer, 3, GL_FLOAT, 3*4, vertices+16
         invoke  glNormalPointer, GL_FLOAT, 3*4, normals+16
-        invoke  glColor3f, 0.5, 0.5, 0.5
+        ;invoke  glColor3f, 0.5, 0.5, 0.5
 
         invoke  glDrawArrays, GL_TRIANGLES, 0, (verticesEnd-vertices-16)/4/3
 
         invoke  glDisableClientState, GL_VERTEX_ARRAY
         invoke  glDisableClientState, GL_NORMAL_ARRAY
+
+        invoke  glDisable, GL_LIGHTING
 
         ret
 
@@ -276,9 +287,9 @@ ticks   dd      0
 prevTime        dd      0.0
 
 posVec:
-.x    dq      0.0
-.y    dq      0.0
-.z    dq      0.0
+.x    dq      20.0
+.y    dq      20.0
+.z    dq      20.0
 
 frontVec:
 .x    dq      0.0
@@ -323,12 +334,9 @@ light1Diffuse   dd              0.1, 0.82, 1.0, 1.0
 
 testStar        dd              57.8, 57.8, 57.8
 
-starsdata       dd              3*4*STARS_COUNT dup (?)
+;starsdata       dd              3*4*STARS_COUNT dup (?)
 
-bufVec          dd      3 dup (?)
-vertice         dd      1000.0, 0.0, 0.0,\
-                        100.0, 0.5, 0.0,\
-                        100.0, 0.0, 0.5
+vertice         dd              3*STARS_COUNT dup (0)
 
 
 include 'random\random.d'

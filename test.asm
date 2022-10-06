@@ -23,7 +23,7 @@ proc WinMain
 
         stdcall Random.Init
 
-        ;stdcall Random.GetFloat
+        stdcall Random.GetFloat
         ;stdcall Random.Get
 
         ;stdcall mulVecD, frontVec, double 10.0
@@ -32,7 +32,7 @@ proc WinMain
         ;stdcall normalizeVecD, frontVec
 
         ;stdcall Stars.Init
-        stdcall  Stars.GetTriangle, starsdata
+        ;stdcall  Stars.GetTriangle, starsdata
 
         invoke  ExitProcess, 0
 endp
