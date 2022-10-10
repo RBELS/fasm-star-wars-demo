@@ -9,6 +9,11 @@ Z_NEAR          =       0.1
 Z_FAR           =       250.0
 STARS_COUNT     =       1024*10
 
+STAGE1_BEGIN    =       0.0
+STAGE1_END      =       10.0
+
+include 'stages\stages.h'
+
 include 'win32ax.inc'
 
 include 'opengl.inc'
@@ -27,9 +32,11 @@ section '.text' code readable executable
         invoke  CreateWindowEx,0,_class,_title,WS_VISIBLE+WS_OVERLAPPEDWINDOW+WS_CLIPCHILDREN+WS_CLIPSIBLINGS,0,0,1600+100,100+1080,NULL,NULL,[wc.hInstance],NULL
         mov     [hwnd],eax
 
+        stdcall Ticks.Init
         stdcall Random.Init
 
         stdcall Stars.Init, vertice, STARS_COUNT
+
 
 
   msg_loop:
@@ -85,24 +92,11 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
         mov     [clock],eax
 
 
-        mov     ecx, 3*8
-        mov     edi, watchPointVec
-        xor     al, al
-        rep     stosb
-
-        stdcall addVecQ, watchPointVec, posVec
-        stdcall addVecQ, watchPointVec, frontVec
 
 
         invoke  glEnable, GL_DEPTH_TEST
         invoke  glShadeModel, GL_SMOOTH
         invoke  glHint, GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST
-
-        invoke  glMatrixMode, GL_MODELVIEW
-        invoke  glLoadIdentity
-        invoke  gluLookAt, double 20.0, double 20.0, double 20.0,\
-                           double 0.0, double 0.0, double 0.0,\
-                           double 0.0, double 1.0, double 0.0
 
         xor     eax, eax
 
@@ -124,42 +118,32 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
 
       .animation_ok:
 
-        push    eax
-        fild    dword [esp]
-        pop     eax
+        stdcall Ticks.Update
 
-        push    50.0
-        fdiv    dword [esp]
-        pop     eax
-        fstp    [time]
-        inc      [ticks]
+
 
         invoke  glClearColor, 0.0, 0.0, 0.02745, 1.0f
         invoke  glClear,GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
-        invoke  glMatrixMode, GL_PROJECTION
-        invoke  glLoadIdentity
-        invoke  gluPerspective, double FOV, double [aspect], double Z_NEAR, double Z_FAR
+        stdcall getStage
+.STAGE1:
+        cmp     eax, 1
+        jne     .STAGE0
 
-        invoke  glMatrixMode, GL_MODELVIEW
+        stdcall drawStage1
 
+        jmp     .STAGE_END
+.STAGE0:
 
-        ;invoke  GetTickCount
-        ;push    eax
-        ;fild    dword [esp]
-        ;fstp    dword [esp]
-        ;pop     eax
-
-        ;invoke  glLoadIdentity
-        invoke  glRotatef, 0.05, 0.0, 1.0, 0.0
+.STAGE_END:
 
 
 
 
 
 
-        stdcall Stars.Draw, vertice, STARS_COUNT
-        stdcall drawDestroyer
+
+
 .wKey:
 
 .wEnd:
@@ -182,9 +166,6 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
         ret
 endp
 
-
-include 'random\random.c'
-
 proc    Stars.Init uses edx ecx, starsData, starsCount
 
         mov     edx, [starsData]
@@ -201,6 +182,9 @@ proc    Stars.Init uses edx ecx, starsData, starsCount
 
         ret
 endp
+
+
+
 
 proc    Stars.Draw, starsData, starsCount
 
@@ -257,6 +241,10 @@ proc    drawDestroyer
 endp
 
 include 'func.c'
+include 'stages\stages.c'
+include 'ticks\ticks.c'
+include 'random\random.c'
+include 'stages\stage1\stage1.c'
 
 
 section '.data' data readable writeable
@@ -282,7 +270,7 @@ clock   dd ?
 
 time    dd 0.0
 
-ticks   dd      0
+
 
 prevTime        dd      0.0
 
@@ -340,16 +328,20 @@ vertice         dd              3*STARS_COUNT dup (0)
 
 
 include 'random\random.d'
+include 'stages\stages.d'
 
-  resdata vertices
-    file  'newModels\destroyer.v'
-  endres
-  verticesEnd:
+include 'stages\stage1\stage1.d'
+include 'ticks\ticks.d'
 
-  resdata normals
-    file  'newModels\destroyer.n'
-  endres
-  normalsEnd:
+resdata vertices
+  file  'newModels\destroyer.v'
+endres
+verticesEnd:
+
+resdata normals
+  file  'newModels\destroyer.n'
+endres
+normalsEnd:
 
 
 

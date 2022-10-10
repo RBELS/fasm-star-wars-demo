@@ -21,9 +21,9 @@ proc WinMain
         ;invoke  Sleep, 1000
         ;invoke  ReadConsoleInput, [inHnd], charInBuf, 10, numEventsRead
 
-        stdcall Random.Init
+        ;stdcall Random.Init
 
-        stdcall Random.GetFloat
+        ;stdcall Random.GetFloat
         ;stdcall Random.Get
 
         ;stdcall mulVecD, frontVec, double 10.0
@@ -34,8 +34,39 @@ proc WinMain
         ;stdcall Stars.Init
         ;stdcall  Stars.GetTriangle, starsdata
 
+        ;push    10.0
+        ;fld     dword [esp]
+        ;pop     edx
+
+        ;push    9.0
+        ;fcom    dword [esp]
+        ;fstsw   ax
+
+        ;test    ah, 0000'0001
+        ;jne     .Greater
+;.Less:
+        ;mov     edx, 0
+        ;jmp     .EndIf
+;.Greater:
+        ;mov     edx, 1
+;.EndIf:
+
+        ;stdcall getStage
+
+
+        ;stdcall Ticks.Init
+
+        ;stdcall Ticks.Update
+
+        stdcall cmpFloats, 11.4, 25.3; ah = 01
+        stdcall cmpFloats, 54.34, -32.1; ah = 00
+        stdcall cmpFloats, 39.39, 39.39; ah = 40
+
         invoke  ExitProcess, 0
 endp
+
+
+
 
 proc    Stars.Init
 
@@ -52,8 +83,10 @@ proc    Stars.Init
         ret
 endp
 
+include 'ticks\ticks.c'
 
 
+include 'stages\stages.c'
 
 include 'random\random.c'
 
@@ -88,6 +121,9 @@ numEventsRead   dd  0
   .x    dq      0.0
   .y    dq      0.0
   .z    dq      0.0
+
+include 'ticks\ticks.d'
+
 
 starsdata       dd      57.8, 57.8, 57.8
 db $FF

@@ -155,76 +155,41 @@ proc    normalizeVecF uses ebx ecx edx, vec
         ret
 endp
 
-proc    Stars.GetTriangle, vec
-        local       stage: DWORD
 
-        mov     ebx, [vec]
-        mov     [stage], 0
-        push    100.0
+proc    getDeltaTicksFloat
 
-.StageLoop:
-
-        mov     edx, 0
-        mov     ecx, 0
-.LoadLoop:
-
-
-        cmp     [stage], ecx
-        jne     .LoadZ
-.Load100:
-        fld     dword [esp]
-        jmp     .EndLoad
-.LoadZ:
-        fldz
-.EndLoad:
-        fsub    dword [ebx+edx]
-        fstp    dword [bufVec+edx]
-
-
-        add     edx, 4
-        inc     ecx
-        cmp     ecx, 3
-        jb      .LoadLoop
-        ;vector loaded
-
-        stdcall normalizeVecF, bufVec
-        mov     ecx, 3
-        mov     edx, 0
-        push    7.0
-.divLoop:
-        fld     dword [bufVec+edx]
-        fdiv    dword [esp]
-        fstp    dword [bufVec+edx]
-
-        add     edx, 4
-        loop    .divLoop
-        pop     eax
-        ;vector normalized and -scaled
-
-        stdcall addVecF, bufVec, ebx
-        stdcall normalizeVecF, bufVec
-        stdcall mulVecF, bufVec, 100.0
-
-
-        ;copy to local mem
-        push    ds
-        pop     es
-        mov     esi, bufVec
-
-        mov     ecx, [stage]
-        imul    ecx, 12
-        lea     edi, [vertice+ecx]
-
-        mov     ecx, 3
-        rep     movsd
-        ;copy to local mem
-
-        inc     [stage]
-        cmp     [stage], 3
-        jb      .StageLoop
-
+        fld     dword [ticksFloat]
+        fsub    dword [startTicksFloat]
+        push    0
+        fstp    dword [esp]
         pop     eax
 
         ret
 endp
 
+
+;       f1 < f2 -> -1
+;       f1 > f2 ->  1
+;       f1 = f2 ->  0
+proc    cmpFloats, f1, f2
+
+        fld     dword [f1]
+        fcomp   dword [f2]
+        fstsw   ax
+
+.EQUAL:
+        test    ah, $40
+        jz      .LESS
+        mov     eax, 0
+        jmp     .ENDIF
+.LESS:
+        test    ah, $01
+        jz      .GREATER
+        mov     eax, -1
+        jmp     .ENDIF
+.GREATER:
+        mov     eax, 1
+.ENDIF:
+
+        ret
+endp
