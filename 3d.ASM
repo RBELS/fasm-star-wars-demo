@@ -122,7 +122,7 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
 
 
 
-        invoke  glClearColor, 0.0, 0.0, 0.02745, 0.0f
+        invoke  glClearColor, 0.0, 0.0, 0.02745, 1.0f
         invoke  glClear,GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
         stdcall getStage
@@ -284,13 +284,10 @@ light3Position  dd              -52.0, 0.0, -190.0, 1.0
 light1Ambient   dd              0.0, 0.0, 1.0, 1.0
 light1Diffuse   dd              0.1, 0.82, 1.0, 1.0
 
-testStar        dd              57.8, 57.8, 57.8
-
-starsData       dd              3*STARS_COUNT dup (0)
-
 
 include 'random\random.d'
 include 'stages\stages.d'
+include 'stars\stars.d'
 
 include 'stages\stage1\stage1.d'
 include 'ticks\ticks.d'

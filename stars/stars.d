@@ -1,0 +1,1 @@
+starsData       dd              3*STARS_COUNT dup (0)
