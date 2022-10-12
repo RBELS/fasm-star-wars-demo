@@ -128,9 +128,16 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
         stdcall getStage
 .STAGE1:
         cmp     eax, 1
-        jne     .STAGE0
+        jne     .STAGE2
 
         stdcall drawStage1
+
+        jmp     .STAGE_END
+.STAGE2:
+        cmp     eax, 2
+        jne     .STAGE0
+
+        stdcall drawStage2
 
         jmp     .STAGE_END
 .STAGE0:
@@ -208,6 +215,7 @@ include 'stages\stages.c'
 include 'ticks\ticks.c'
 include 'random\random.c'
 include 'stages\stage1\stage1.c'
+include 'stages\stage2\stage2.c'
 include 'stars\stars.c'
 
 
@@ -290,6 +298,7 @@ include 'stages\stages.d'
 include 'stars\stars.d'
 
 include 'stages\stage1\stage1.d'
+include 'stages\stage2\stage2.d'
 include 'ticks\ticks.d'
 
 resdata vertices

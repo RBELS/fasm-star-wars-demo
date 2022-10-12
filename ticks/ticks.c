@@ -27,6 +27,10 @@ proc    Ticks.Update
         invoke  GetTickCount
         sub     eax, [startTicks]
 
+        ;to rewind scene
+        ;add     eax, 200 * 100
+        ;to rewind scene
+
         mov     [ticks], eax
         fild    dword [ticks]
 
