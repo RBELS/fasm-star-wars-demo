@@ -126,7 +126,7 @@ proc    drawStage1
         ;create and push view matrix
 
         ;invoke  glTranslatef, 0.0, 0.0, dword [Stage1.cameraPos.z]
-        stdcall Stars.Draw, vertice, STARS_COUNT
+        stdcall Stars.Draw, starsData, STARS_COUNT
 
 
         invoke  glTranslatef, -20.0, -10.0, dword [Stage1.dest1Z]

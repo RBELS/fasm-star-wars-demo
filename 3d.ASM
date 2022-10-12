@@ -35,7 +35,7 @@ section '.text' code readable executable
         stdcall Ticks.Init
         stdcall Random.Init
 
-        stdcall Stars.Init, vertice, STARS_COUNT
+        stdcall Stars.Init, starsData, STARS_COUNT
 
 
 
@@ -122,7 +122,7 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
 
 
 
-        invoke  glClearColor, 0.0, 0.0, 0.02745, 1.0f
+        invoke  glClearColor, 0.0, 0.0, 0.02745, 0.0f
         invoke  glClear,GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
         stdcall getStage
@@ -166,44 +166,7 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
         ret
 endp
 
-proc    Stars.Init uses edx ecx, starsData, starsCount
 
-        mov     edx, [starsData]
-        mov     ecx, STARS_COUNT
-.GenLoop:
-        push    cx
-        stdcall genVecF, edx
-        stdcall normalizeVecF, edx
-        stdcall mulVecF, edx, 100.0
-        pop     cx
-
-        add     edx, 12
-        loop    .GenLoop
-
-        ret
-endp
-
-
-
-
-proc    Stars.Draw, starsData, starsCount
-
-
-
-        invoke  glPointSize, 1.0
-        invoke  glEnable, GL_POINT_SMOOTH
-        invoke  glEnableClientState, GL_VERTEX_ARRAY
-
-        invoke  glVertexPointer, 3, GL_FLOAT, 0, [starsData]
-        invoke  glColor3f, 1.0, 1.0, 1.0
-
-        invoke  glDrawArrays, GL_POINTS, 0, [starsCount]
-
-        invoke  glDisableClientState, GL_VERTEX_ARRAY
-
-
-        ret
-endp
 
 
 proc    drawDestroyer
@@ -245,6 +208,7 @@ include 'stages\stages.c'
 include 'ticks\ticks.c'
 include 'random\random.c'
 include 'stages\stage1\stage1.c'
+include 'stars\stars.c'
 
 
 section '.data' data readable writeable
@@ -322,9 +286,7 @@ light1Diffuse   dd              0.1, 0.82, 1.0, 1.0
 
 testStar        dd              57.8, 57.8, 57.8
 
-;starsdata       dd              3*4*STARS_COUNT dup (?)
-
-vertice         dd              3*STARS_COUNT dup (0)
+starsData       dd              3*STARS_COUNT dup (0)
 
 
 include 'random\random.d'
