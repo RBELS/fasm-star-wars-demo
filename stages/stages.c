@@ -3,18 +3,10 @@ STAGE1_END      equ     100.0
 
 proc    getStage uses edx
 
-        fld     dword [ticksFloat]
-        ;push     11.0
-        ;fld      dword [esp]
-        ;pop      edx
-
 .CASE_STAGE1:
-        push    STAGE1_END
-        fcom    dword [esp]
-        pop     eax
-        fstsw   ax
+        stdcall cmpFloats, dword [ticksFloat], STAGE1_END
 
-        test    ah, 1
+        cmp    al, 1
         je     .CASE_STAGE0
 
         mov     eax, 1
