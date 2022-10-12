@@ -156,16 +156,28 @@ proc    normalizeVecF uses ebx ecx edx, vec
 endp
 
 
-proc    getDeltaTicksFloat
+proc    translateVecD uses ebx, camVec, addX: QWORD, addY: QWORD, addZ:QWORD
 
-        fld     dword [ticksFloat]
-        fsub    dword [startTicksFloat]
-        push    0
-        fstp    dword [esp]
-        pop     eax
+        mov     ebx, [camVec]
+
+        fld     qword [addX]
+        fmul    dword [deltaTicksFloat]
+        fadd    qword [ebx]
+        fstp    qword [ebx]
+
+        fld     qword [addY]
+        fmul    dword [deltaTicksFloat]
+        fadd    qword [ebx+8]
+        fstp    qword [ebx+8]
+
+        fld     qword [addZ]
+        fmul    dword [deltaTicksFloat]
+        fadd    qword [ebx+16]
+        fstp    qword [ebx+16]
 
         ret
 endp
+
 
 
 ;       f1 < f2 -> -1
@@ -190,6 +202,21 @@ proc    cmpFloats, f1, f2
 .GREATER:
         mov     eax, 1
 .ENDIF:
+
+        ret
+endp
+
+
+proc    movQWord, q1, q2, dest
+
+        mov     ebx, [dest]
+
+        mov     eax, [q1]
+        mov     dword [ebx], eax
+
+        mov     eax, [q2]
+        mov     dword [ebx+4], eax
+
 
         ret
 endp

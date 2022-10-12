@@ -80,17 +80,52 @@ proc    drawStage1
 
 
         ;create and push view matrix
-
         invoke  glMatrixMode, GL_MODELVIEW
         invoke  glLoadIdentity
-        invoke  gluLookAt, double 30.0, double 5.0, double 50.0,\
-                           double 0.0, double 0.0, double 0.0,\
+
+.BEFORE_MOVE:
+        stdcall cmpFloats, dword [ticksFloat], 50.0
+        cmp     al, 1
+        je      .MOVE1
+
+        jmp     .SWITCH_CAM_END
+.MOVE1:
+        stdcall cmpFloats, dword [ticksFloat], 90.0
+        cmp     al, 1
+        je      .MOVE2
+
+        stdcall translateVecD, Stage1.cameraPos, double 0.5, double 0.5, double 0.2
+
+
+        jmp     .SWITCH_CAM_END
+.MOVE2:
+        stdcall cmpFloats, dword [ticksFloat], 150.0
+        cmp     al, 1
+        je      .MOVE3
+
+        stdcall translateVecD, Stage1.cameraPos, double -0.8, double -0.1, double 0.2
+        stdcall translateVecD, Stage1.pointPos,  double 0.0, double 0.0, double 0.6
+
+        jmp     .SWITCH_CAM_END
+.MOVE3:
+        ;stdcall cmpFloats, dword [ticksFloat], 200.0
+        ;cmp     al, 1
+        ;je      .NEXT
+
+        stdcall translateVecD, Stage1.cameraPos, double -0.02, double -0.05, double 0.4
+        stdcall translateVecD, Stage1.pointPos,  double 0.0, double 0.0, double 0.2
+.SWITCH_CAM_END:
+
+        ;stdcall movQWord, double 30.0, Stage1.cameraPos.x
+
+        invoke  gluLookAt, double [Stage1.cameraPos.x], double [Stage1.cameraPos.y], double [Stage1.cameraPos.z],\
+                           double [Stage1.pointPos.x], double [Stage1.pointPos.y], double [Stage1.pointPos.z],\
                            double 0.0, double 1.0, double 0.0
 
         invoke  glPushMatrix
         ;create and push view matrix
 
-
+        ;invoke  glTranslatef, 0.0, 0.0, dword [Stage1.cameraPos.z]
         stdcall Stars.Draw, vertice, STARS_COUNT
 
 

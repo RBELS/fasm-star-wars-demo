@@ -1,5 +1,5 @@
 STAGE1_BEGIN    equ     0.0
-STAGE1_END      equ     100.0
+STAGE1_END      equ     200.0
 
 proc    getStage uses edx
 
