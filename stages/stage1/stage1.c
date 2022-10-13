@@ -30,10 +30,26 @@ proc    drawStage1
         ;invoke  glTranslatef, 0.0, 0.0, dword [Stage1.cameraPos.z]
         stdcall Stars.Draw, starsData
 
-
-        invoke  glTranslatef, -20.0, -10.0, dword [Stage1.dest1Z]
-
+        stdcall getPos, Dest1Table, Dest1TableEnd, Stage1.dest1Pos
+        invoke  glPopMatrix
+        invoke  glPushMatrix
+        invoke  glTranslatef, dword [Stage1.dest1Pos.x], dword [Stage1.dest1Pos.y], dword [Stage1.dest1Pos.z]
         stdcall drawDestroyer
+
+
+        stdcall getPos, Dest2Table, Dest2TableEnd, Stage1.dest2Pos
+        invoke  glPopMatrix
+        invoke  glPushMatrix
+        invoke  glTranslatef, dword [Stage1.dest2Pos.x], dword [Stage1.dest2Pos.y], dword [Stage1.dest2Pos.z]
+        stdcall drawDestroyer
+
+
+        stdcall getPos, Dest3Table, Dest3TableEnd, Stage1.dest3Pos
+        invoke  glPopMatrix
+        invoke  glPushMatrix
+        invoke  glTranslatef, dword [Stage1.dest3Pos.x], dword [Stage1.dest3Pos.y], dword [Stage1.dest3Pos.z]
+        stdcall drawDestroyer
+
 
         ret
 endp

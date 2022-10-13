@@ -85,7 +85,7 @@ numEventsRead   dd  0
 
 ;include 'ticks\ticks.d'
 include 'stages\drawQueue\drawQueue.d'
-ticksFloat      dd      20.0
+ticksFloat      dd      40.0
 
 starsdata       dd      57.8, 57.8, 57.8
 db $FF

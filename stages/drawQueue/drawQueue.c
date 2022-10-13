@@ -23,9 +23,10 @@ proc    getIndex uses ecx edx ebx, tableStart, tableEnd
         jmp     .findLoop
 .noResult:
         mov     edx, -1
+        jmp     .noDec
 .endFindLoop:
-
         dec     edx
+.noDec:
         mov     eax, edx
 
         ret
@@ -37,6 +38,9 @@ proc    getPos uses eax ecx edx ebx es esi edi, table, tableEnd, vector
         local   indent:      DWORD
 
         stdcall getIndex, dword [table], dword [tableEnd]
+
+        cmp     eax, -1
+        je      .PROC_END
 
         imul    eax, 16
         add     eax, [table]; param2
@@ -105,6 +109,7 @@ proc    getPos uses eax ecx edx ebx es esi edi, table, tableEnd, vector
         rep     movsd
         pop     ds
 
+.PROC_END:
 
         ret
 endp

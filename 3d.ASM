@@ -217,6 +217,7 @@ include 'random\random.c'
 include 'stages\stage1\stage1.c'
 include 'stages\stage2\stage2.c'
 include 'stars\stars.c'
+include 'stages\drawQueue\drawQueue.c'
 
 
 section '.data' data readable writeable
@@ -300,6 +301,8 @@ include 'stars\stars.d'
 include 'stages\stage1\stage1.d'
 include 'stages\stage2\stage2.d'
 include 'ticks\ticks.d'
+
+include 'stages\drawQueue\drawQueue.d'
 
 resdata vertices
   file  'newModels\destroyer.v'
