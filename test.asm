@@ -17,50 +17,10 @@ proc WinMain
 
         invoke  WriteConsole, [outHnd], szText, 9, numEventsRead, NULL
 
-        ;stdcall strToFloat, floatStr
-        ;invoke  Sleep, 1000
-        ;invoke  ReadConsoleInput, [inHnd], charInBuf, 10, numEventsRead
+        ;stdcall getIndex
+        stdcall  getPos, Dest1Table, Dest1TableEnd, dest1Pos
 
-        ;stdcall Random.Init
-
-        ;stdcall Random.GetFloat
-        ;stdcall Random.Get
-
-        ;stdcall mulVecD, frontVec, double 10.0
-        ;stdcall mulVecD, frontVec, double 10.0
-
-        ;stdcall normalizeVecD, frontVec
-
-        ;stdcall Stars.Init
-        ;stdcall  Stars.GetTriangle, starsdata
-
-        ;push    10.0
-        ;fld     dword [esp]
-        ;pop     edx
-
-        ;push    9.0
-        ;fcom    dword [esp]
-        ;fstsw   ax
-
-        ;test    ah, 0000'0001
-        ;jne     .Greater
-;.Less:
-        ;mov     edx, 0
-        ;jmp     .EndIf
-;.Greater:
-        ;mov     edx, 1
-;.EndIf:
-
-        ;stdcall getStage
-
-
-        ;stdcall Ticks.Init
-
-        ;stdcall Ticks.Update
-
-        stdcall cmpFloats, 11.4, 25.3; ah = 01
-        stdcall cmpFloats, 54.34, -32.1; ah = 00
-        stdcall cmpFloats, 39.39, 39.39; ah = 40
+        fld     dword [dest1Pos]
 
         invoke  ExitProcess, 0
 endp
@@ -87,7 +47,8 @@ include 'ticks\ticks.c'
 
 
 include 'stages\stages.c'
-
+include 'stages\stage1\stage1.d'
+include 'stages\drawQueue\drawQueue.c'
 include 'random\random.c'
 
 include 'func.c'
@@ -122,13 +83,15 @@ numEventsRead   dd  0
   .y    dq      0.0
   .z    dq      0.0
 
-include 'ticks\ticks.d'
-
+;include 'ticks\ticks.d'
+include 'stages\drawQueue\drawQueue.d'
+ticksFloat      dd      20.0
 
 starsdata       dd      57.8, 57.8, 57.8
 db $FF
 bufVec          dd      3 dup (?)
 vertice         dd      3*3*4 dup (?)
+dest1Pos        dd      3 dup (0)
 
 include 'random\random.d'
 
