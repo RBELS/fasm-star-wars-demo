@@ -7,7 +7,7 @@ entry start
 FOV             =       50.0
 Z_NEAR          =       0.1
 Z_FAR           =       250.0
-STARS_COUNT     =       1024*10
+STARS_COUNT     =       1024*20
 
 STAGE1_BEGIN    =       0.0
 STAGE1_END      =       10.0

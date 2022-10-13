@@ -7,7 +7,7 @@ proc    drawStage2
                            double 0.0, double 0.0, double 0.0,\
                            double 0.0, double 1.0, double 0.0
 
-        stdcall Stars.Draw, starsData, STARS_COUNT
+        stdcall Stars.Draw, starsData
 
         ret
 endp

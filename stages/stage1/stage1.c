@@ -84,13 +84,13 @@ proc    drawStage1
         invoke  glLoadIdentity
 
 .BEFORE_MOVE:
-        stdcall cmpFloats, dword [ticksFloat], 50.0
+        stdcall cmpFloats, dword [ticksFloat], 50.0;50t
         cmp     al, 1
         je      .MOVE1
 
         jmp     .SWITCH_CAM_END
 .MOVE1:
-        stdcall cmpFloats, dword [ticksFloat], 90.0
+        stdcall cmpFloats, dword [ticksFloat], 90.0;40t
         cmp     al, 1
         je      .MOVE2
 
@@ -99,7 +99,7 @@ proc    drawStage1
 
         jmp     .SWITCH_CAM_END
 .MOVE2:
-        stdcall cmpFloats, dword [ticksFloat], 150.0
+        stdcall cmpFloats, dword [ticksFloat], 150.0;60t
         cmp     al, 1
         je      .MOVE3
 
@@ -116,7 +116,7 @@ proc    drawStage1
         stdcall translateVecD, Stage1.pointPos,  double 0.0, double 0.0, double 0.2
 .SWITCH_CAM_END:
 
-        ;stdcall movQWord, double 30.0, Stage1.cameraPos.x
+
 
         invoke  gluLookAt, double [Stage1.cameraPos.x], double [Stage1.cameraPos.y], double [Stage1.cameraPos.z],\
                            double [Stage1.pointPos.x], double [Stage1.pointPos.y], double [Stage1.pointPos.z],\
@@ -126,7 +126,7 @@ proc    drawStage1
         ;create and push view matrix
 
         ;invoke  glTranslatef, 0.0, 0.0, dword [Stage1.cameraPos.z]
-        stdcall Stars.Draw, starsData, STARS_COUNT
+        stdcall Stars.Draw, starsData
 
 
         invoke  glTranslatef, -20.0, -10.0, dword [Stage1.dest1Z]
