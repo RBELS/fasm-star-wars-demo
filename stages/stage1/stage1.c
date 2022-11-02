@@ -50,6 +50,22 @@ proc    drawStage1
         invoke  glTranslatef, dword [Stage1.dest3Pos.x], dword [Stage1.dest3Pos.y], dword [Stage1.dest3Pos.z]
         stdcall drawDestroyer
 
+        ;Draw tie fighter
+
+        stdcall getPos, Tie1PosTable, Tie1PosTableEnd, Stage1.tie1Pos
+        stdcall getPos, Tie1RotateTable, Tie1RotateTableEnd, Stage1.tie1Rot
+        invoke  glPopMatrix
+        invoke  glPushMatrix
+
+        invoke  glTranslatef, dword [Stage1.tie1Pos.x], dword [Stage1.tie1Pos.y], dword [Stage1.tie1Pos.z]
+        invoke  glScalef, 0.2, 0.2, 0.2
+
+        ;ROTATE
+        invoke  glRotatef, [Stage1.tie1Rot.x], 1.0, 0.0, 0.0
+        invoke  glRotatef, [Stage1.tie1Rot.y], 0.0, 1.0, 0.0
+        invoke  glRotatef, [Stage1.tie1Rot.z], 0.0, 0.0, 1.0
+
+        stdcall drawTie
 
         ret
 endp

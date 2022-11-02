@@ -13,6 +13,17 @@ Stage1.dest3Pos:
 .y      dd      0.0
 .z      dd      -1000.0
 
+
+Stage1.tie1Pos:
+.x      dd      24.0
+.y      dd      12.0
+.z      dd      44.0
+
+Stage1.tie1Rot:
+.x      dd      0.0
+.y      dd      0.0
+.z      dd      0.0
+
 ;some data may be used without initialization!
 
 Stage1.dest2Z   dd      -1000.0

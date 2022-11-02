@@ -9,8 +9,8 @@ Z_NEAR          =       0.1
 Z_FAR           =       250.0
 STARS_COUNT     =       1024*20
 
-STAGE1_BEGIN    =       0.0
-STAGE1_END      =       10.0
+;STAGE1_BEGIN    =       0.0
+;STAGE1_END      =       10.0
 
 include 'stages\stages.h'
 
@@ -218,6 +218,7 @@ include 'stages\stage1\stage1.c'
 include 'stages\stage2\stage2.c'
 include 'stars\stars.c'
 include 'stages\drawQueue\drawQueue.c'
+include 'tie\tie.c'
 
 
 section '.data' data readable writeable
@@ -301,6 +302,8 @@ include 'stars\stars.d'
 include 'stages\stage1\stage1.d'
 include 'stages\stage2\stage2.d'
 include 'ticks\ticks.d'
+
+include 'tie\tie.d'
 
 include 'stages\drawQueue\drawQueue.d'
 

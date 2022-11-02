@@ -9,5 +9,7 @@ proc    drawStage2
 
         stdcall Stars.Draw, starsData
 
+        stdcall drawTie
+
         ret
 endp
