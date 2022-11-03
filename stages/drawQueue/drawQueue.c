@@ -32,8 +32,7 @@ proc    getIndex uses ecx edx ebx, tableStart, tableEnd
         ret
 endp
 
-
-proc    getPos uses eax ecx edx ebx es esi edi, table, tableEnd, vector
+proc    getPosF uses eax ecx edx ebx es esi edi, table, tableEnd, vector
         local   speedVec[3]: DWORD
         local   indent:      DWORD
 

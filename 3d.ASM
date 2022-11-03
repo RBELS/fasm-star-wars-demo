@@ -295,6 +295,7 @@ light1Ambient   dd              0.0, 0.0, 1.0, 1.0
 light1Diffuse   dd              0.1, 0.82, 1.0, 1.0
 
 
+include 'func.d'
 include 'random\random.d'
 include 'stages\stages.d'
 include 'stars\stars.d'

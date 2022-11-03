@@ -15,9 +15,9 @@ Stage1.dest3Pos:
 
 
 Stage1.tie1Pos:
-.x      dd      24.0
-.y      dd      12.0
-.z      dd      44.0
+.x      dd      30.0
+.y      dd      5.0
+.z      dd      50.0
 
 Stage1.tie1Rot:
 .x      dd      0.0
@@ -37,7 +37,25 @@ Stage1.cameraPos:
 .y              dq      5.0
 .z              dq      50.0
 
+Stage1.cameraPosF:
+.x      dd      30.0
+.y      dd      5.0
+.z      dd      50.0
+
 Stage1.pointPos:
 .x              dq      0.0
 .y              dq      0.0
 .z              dq      0.0
+
+Stage1.upVecF:
+.x      dd      0.0
+.y      dd      1.0
+.z      dd      0.0
+
+Stage1.upVecD:
+.x      dq      0.0
+.y      dq      1.0
+.z      dq      0.0
+
+
+Debug.startTicksAdd     equ      100

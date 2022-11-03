@@ -36,6 +36,23 @@ proc addVecF uses edx ecx, vec1, vec2
         ret
 endp
 
+proc addVecFtoD uses ecx esi edi, dest, src
+
+        mov     esi, [src]
+        mov     edi, [dest]
+        mov     ecx, 3
+.addLoop:
+        fld     qword [edi]
+        fadd    dword [esi]
+        fstp    qword [edi]
+
+        add     esi, 4
+        add     edi, 8
+        loop    .addLoop
+
+        ret
+endp
+
 
 proc    mulVecD uses ebx ecx, vec, coeff
 
@@ -220,3 +237,205 @@ proc    movQWord, q1, q2, dest
 
         ret
 endp
+
+proc rotateXYZF, vec, newVec, angleX, angleY, angleZ
+
+        stdcall degToRad, [angleX]
+        stdcall rotateX, [vec], [newVec], eax
+        stdcall copyVecFtoF, rotateXYZF.bufVec, [newVec]
+
+        stdcall degToRad, [angleY]
+        stdcall rotateY, rotateXYZF.bufVec, [newVec], eax
+        stdcall copyVecFtoF, rotateXYZF.bufVec, [newVec]
+
+        stdcall degToRad, [angleZ]
+        stdcall rotateZ, rotateXYZF.bufVec, [newVec], eax
+
+        ret
+endp
+
+proc rotateZ uses ecx ebx esi edi, vec, newVec, angle
+
+        lea     ebx, [vec]
+        lea     ecx, [newVec]
+        mov     esi, [ebx]
+        mov     edi, [ecx]
+
+        fld     dword [angle]
+        fsincos
+
+        fld     dword [esi]
+        fmul    st0, st1
+        fld     dword [esi+4]
+        fmul    st0, st3
+        fchs
+
+        fadd    st0, st1
+
+        fstp    dword [edi]
+        push    0
+        fstp    dword [esp]
+
+        fld     dword [esi]
+        fmul    st0, st2
+        fld     dword [esi+4]
+        fmul    st0, st2
+
+        fadd    st0, st1
+        fstp    dword [edi+4]
+        fstp    dword [esp]
+
+        mov     eax, [esi+8]
+        mov     [edi+8], eax
+
+        fstp    dword [esp]
+        fstp    dword [esp]
+
+        pop     eax
+
+        ret
+endp
+
+proc rotateX uses ecx ebx esi edi, vec, newVec, angle
+
+        lea     ebx, [vec]
+        lea     ecx, [newVec]
+        mov     esi, [ebx]
+        mov     edi, [ecx]
+
+        fld     dword [angle]
+        fsincos
+
+        mov     eax, [esi]
+        mov     [edi], eax
+
+        fld     dword [esi+4]
+        fmul    st0, st1
+        fld     dword [esi+8]
+        fmul    st0, st3
+        fchs
+
+        fadd    st0, st1
+        fstp    dword [edi+4]
+        push    0
+        fstp    dword [esp]
+
+        fld     dword [esi+4]
+        fmul    st0, st2
+        fld     dword [esi+8]
+        fmul    st0, st2
+
+        fadd    st0, st1
+        fstp    dword [edi+8]
+
+        fstp    dword [esp]
+        fstp    dword [esp]
+        fstp    dword [esp]
+
+        pop     eax
+
+        ret
+endp
+
+
+proc rotateY uses ecx ebx esi edi, vec, newVec, angle
+
+
+        lea     ebx, [vec]
+        lea     ecx, [newVec]
+        mov     esi, [ebx]
+        mov     edi, [ecx]
+
+        fld     dword [angle]
+        fsincos
+
+        fld     dword [esi]
+        fmul    st0, st1
+        fld     dword [esi+8]
+        fmul    st0, st3
+
+        fadd    st0, st1
+
+        fstp    dword [edi]
+        push    0
+        fstp    dword [esp]
+
+        mov     eax, dword [esi+4]
+        mov     dword [edi+4], eax
+
+        fld     dword [esi]
+        fmul    st0, st2
+        fchs
+        fld     dword [esi+8]
+        fmul    st0, st2
+        fadd    st0, st1
+
+        fstp    dword [edi+8]
+
+        fstp    dword [esp]
+        fstp    dword [esp]
+        fstp    dword [esp]
+
+        pop     eax
+
+        ret
+endp
+
+proc copyVecFtoF uses ecx esi edi, dest, src
+
+        mov     esi, [src]
+        mov     edi, [dest]
+
+        mov     ecx, 3
+        rep     movsd
+
+        ret
+endp
+
+proc copyVecFtoD uses ecx esi edi, dest, src
+
+        mov     esi, [src]
+        mov     edi, [dest]
+        mov     ecx, 3
+.copyLoop:
+        fld     dword [esi]
+        fstp    qword [edi]
+
+        add     esi, 4
+        add     edi, 8
+        loop    .copyLoop
+
+        ret
+endp
+
+proc degToRad, deg
+
+        fldpi
+        fmul    dword [deg]
+        push    180.0
+        fdiv    dword [esp]
+        fstp    dword [esp]
+        pop     eax
+
+        ret
+endp
+
+proc setCameraToTie
+
+        stdcall rotateXYZF, ozVec, watchVec, [Stage1.tie1Rot.x], [Stage1.tie1Rot.y], [Stage1.tie1Rot.z]
+        ;stdcall copyVecFtoF, watchVec, ozVec
+
+        ;stdcall degToRad, dword [Stage1.tie1Rot.y]
+        ;stdcall rotateY, ozVec, watchVec, eax
+        stdcall mulVecF, watchVec, 5.0
+
+        stdcall copyVecFtoD, Stage1.cameraPos, Stage1.tie1Pos
+
+        stdcall addVecFtoD, Stage1.cameraPos, watchVec
+        stdcall addVecFtoD, Stage1.cameraPos, Stage1.upVecF
+
+        stdcall copyVecFtoD, Stage1.pointPos, Stage1.tie1Pos
+
+        ret
+endp
+

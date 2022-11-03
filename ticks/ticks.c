@@ -8,6 +8,7 @@ proc    Ticks.Init uses edx
         push    100.0
         fdiv    dword [esp]
         pop     eax
+
         fstp    dword [startTicksFloat]
 
         mov     [prevTicks], 0
@@ -28,7 +29,7 @@ proc    Ticks.Update
         sub     eax, [startTicks]
 
         ;to rewind scene
-        ;add     eax, 200 * 100
+        add     eax, 0 * 100
         ;to rewind scene
 
         mov     [ticks], eax
