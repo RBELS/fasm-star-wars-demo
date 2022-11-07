@@ -18,9 +18,29 @@ proc WinMain
         invoke  WriteConsole, [outHnd], szText, 9, numEventsRead, NULL
 
         ;stdcall getIndex
-        stdcall  getPos, Dest1Table, Dest1TableEnd, dest1Pos
+        ;stdcall  getPos, Dest1Table, Dest1TableEnd, dest1Pos
 
-        fld     dword [dest1Pos]
+        ;fld     dword [dest1Pos]
+
+        ;mov     dword [ticksFloat], 10.0
+
+        ;stdcall getPosD, Tie1PosTable, Tie1PosTableEnd, testTiePos
+
+        ;fld     qword [posVec.x]
+        ;fstp    qword [posVec.x]
+
+        ;fld     qword [posVec.y]
+        ;fstp    qword [posVec.y]
+
+        ;stdcall cmpDoubles, double [posVec.x], double [posVec.y]
+
+        ;stdcall getIndexD, Tie1PosTable, Tie1PosTableEnd
+
+        stdcall getPosD, Tie1PosTable, Tie1PosTableEnd, posVec
+
+        fld     qword [posVec.z]
+        fld     qword [posVec.y]
+        fld     qword [posVec.x]
 
         invoke  ExitProcess, 0
 endp
@@ -69,8 +89,8 @@ charInBuf   db  0 dup 10
 numEventsRead   dd  0
 
   posVec:
-  .x    dq      0.0
-  .y    dq      0.0
+  .x    dq      30.0
+  .y    dq      20.0
   .z    dq      800.0
 
   frontVec:
@@ -83,9 +103,14 @@ numEventsRead   dd  0
   .y    dq      0.0
   .z    dq      0.0
 
+testTiePos:
+.x      dq      0.0
+.y      dq      0.0
+.z      dq      0.0
+
 ;include 'ticks\ticks.d'
 include 'stages\drawQueue\drawQueue.d'
-ticksFloat      dd      40.0
+ticksFloat      dd      120.0
 
 starsdata       dd      57.8, 57.8, 57.8
 db $FF

@@ -15,9 +15,9 @@ Stage1.dest3Pos:
 
 
 Stage1.tie1Pos:
-.x      dd      30.0
-.y      dd      5.0
-.z      dd      50.0
+.x      dq      30.0
+.y      dq      5.0
+.z      dq      50.0
 
 Stage1.tie1Rot:
 .x      dd      0.0
@@ -47,10 +47,10 @@ Stage1.pointPos:
 .y              dq      0.0
 .z              dq      0.0
 
-Stage1.upVecF:
-.x      dd      0.0
-.y      dd      1.0
-.z      dd      0.0
+;Stage1.upVecF:
+;.x      dd      0.0
+;.y      dd      1.0
+;.z      dd      0.0
 
 Stage1.upVecD:
 .x      dq      0.0
