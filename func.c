@@ -456,6 +456,23 @@ proc copyVecDtoD uses ecx esi edi, dest, src
         ret
 endp
 
+proc subVecDfromD uses ecx esi edi, dest, src
+
+        mov     ecx, 3
+        mov     esi, [src]
+        mov     edi, [dest]
+.subLoop:
+        fld     qword [edi]
+        fsub    qword [esi]
+        fstp    qword [edi]
+
+        add     edi, 8
+        add     esi, 8
+        loop    .subLoop
+
+        ret
+endp
+
 proc degToRad, deg
 
         fldpi

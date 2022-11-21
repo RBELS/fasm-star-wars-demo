@@ -17,6 +17,16 @@ proc    drawStage1
         invoke  glLoadIdentity
         invoke  gluPerspective, double FOV, double [aspect], double Z_NEAR, double Z_FAR
 
+        stdcall copyVecDtoD, Stage1.bufVecD, Stage1.pointPos
+        stdcall subVecDfromD, Stage1.bufVecD, Stage1.cameraPos
+
+        invoke  glMatrixMode, GL_MODELVIEW
+        invoke  glLoadIdentity
+        invoke  gluLookAt, double 0.0, double 0.0, double 0.0,\
+                           double [Stage1.bufVecD.x], double [Stage1.bufVecD.y], double [Stage1.bufVecD.z],\
+                           double 0.0, double 1.0, double 0.0
+
+        stdcall Stars.Draw, starsData
 
         ;stdcall getPosF, TestCamPosTable, TestCamPosTableEnd, Stage1.cameraPosF
         ;stdcall copyVecFtoD, Stage1.cameraPos, Stage1.cameraPosF
@@ -34,8 +44,6 @@ proc    drawStage1
         invoke  glPushMatrix
         invoke  glPushMatrix
         invoke  glPushMatrix
-
-        stdcall Stars.Draw, starsData
 
 
         ;DESTROYER 1
@@ -68,7 +76,6 @@ proc    drawStage1
         ;invoke  glPushMatrix
 
         stdcall drawTie
-
 
         ret
 endp

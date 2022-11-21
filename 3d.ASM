@@ -29,7 +29,7 @@ section '.text' code readable executable
         invoke  LoadCursor,0,IDC_ARROW
         mov     [wc.hCursor],eax
         invoke  RegisterClass,wc
-        invoke  CreateWindowEx,0,_class,_title,WS_VISIBLE+WS_OVERLAPPEDWINDOW+WS_CLIPCHILDREN+WS_CLIPSIBLINGS,0,0,1600+100,100+1080,NULL,NULL,[wc.hInstance],NULL
+        invoke  CreateWindowEx,0,_class,_title,WS_VISIBLE+WS_POPUP,0,0,1920,1080,NULL,NULL,[wc.hInstance],NULL
         mov     [hwnd],eax
 
         stdcall Ticks.Init
@@ -238,7 +238,7 @@ msg     MSG
 rc      RECT
 pfd     PIXELFORMATDESCRIPTOR
 
-aspect  dq     1.48148148
+aspect  dq     1.777777
 
 clock   dd ?
 
