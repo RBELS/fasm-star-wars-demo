@@ -2,10 +2,10 @@ proc    drawTie
 
         invoke  glEnable, GL_NORMALIZE
         invoke  glEnable, GL_LIGHTING
-        invoke  glEnable, GL_LIGHT0
+        ;invoke  glEnable, GL_LIGHT0
         invoke  glLightfv, GL_LIGHT0, GL_DIFFUSE, light0Diffuse
 
-        invoke  glLightfv, GL_LIGHT0, GL_POSITION, light0Position
+        ;invoke  glLightfv, GL_LIGHT0, GL_POSITION, light0Position
 
         invoke  glEnableClientState, GL_VERTEX_ARRAY
         invoke  glEnableClientState, GL_NORMAL_ARRAY

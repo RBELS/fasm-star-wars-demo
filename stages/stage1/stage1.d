@@ -57,7 +57,12 @@ Stage1.upVecD:
 .y      dq      1.0
 .z      dq      0.0
 
-Stage1.bufVecD:
+Stage1.pointPosBufVecD:
+.x      dq      0.0
+.y      dq      0.0
+.z      dq      0.0
+
+Stage1.cameraPosBufVecD:
 .x      dq      0.0
 .y      dq      0.0
 .z      dq      0.0

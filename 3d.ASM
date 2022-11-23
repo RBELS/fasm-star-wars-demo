@@ -181,7 +181,9 @@ proc    drawDestroyer
         invoke  glEnable, GL_NORMALIZE
         invoke  glEnable, GL_LIGHTING
         invoke  glEnable, GL_LIGHT0
+        invoke  glEnable, GL_LIGHT1
         invoke  glLightfv, GL_LIGHT0, GL_DIFFUSE, light0Diffuse
+        invoke  glLightfv, GL_LIGHT1, GL_DIFFUSE, light0Diffuse
 
 
         ;invoke  glTranslatef, [destroyerPos.x], [destroyerPos.y], [destroyerPos.z]
@@ -189,6 +191,7 @@ proc    drawDestroyer
         ;invoke  glLightfv, GL_LIGHT2, GL_POSITION, light2Position
         ;invoke  glLightfv, GL_LIGHT3, GL_POSITION, light3Position
         invoke  glLightfv, GL_LIGHT0, GL_POSITION, light0Position
+        invoke  glLightfv, GL_LIGHT1, GL_POSITION, light1Position
 
 
 
@@ -287,7 +290,7 @@ light0V         dd              0.0, 0.0, 0.0
 light0Ambient   dd              1.0, 0.0, 0.0, 1.0
 light0Diffuse   dd              1.0, 1.0, 1.0, 1.0
 
-light1Position  dd              0.0, 0.0, -190.0, 1.0
+light1Position  dd              -600.0, 50.0, 0.0, 1.0
 light2Position  dd              52.0, 0.0, -190.0, 1.0
 light3Position  dd              -52.0, 0.0, -190.0, 1.0
 

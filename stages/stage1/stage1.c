@@ -17,14 +17,21 @@ proc    drawStage1
         invoke  glLoadIdentity
         invoke  gluPerspective, double FOV, double [aspect], double Z_NEAR, double Z_FAR
 
-        stdcall copyVecDtoD, Stage1.bufVecD, Stage1.pointPos
-        stdcall subVecDfromD, Stage1.bufVecD, Stage1.cameraPos
+        ;stdcall copyVecDtoD, Stage1.cameraPosBufVecD, Stage1.cameraPos
+        ;stdcall mulVecD, Stage1.cameraPosBufVecD, 0.05
+
+        ;stdcall copyVecDtoD, Stage1.pointPosBufVecD, Stage1.pointPos
+        ;stdcall subVecDfromD, Stage1.pointPosBufVecD, Stage1.cameraPos
 
         invoke  glMatrixMode, GL_MODELVIEW
         invoke  glLoadIdentity
-        invoke  gluLookAt, double 0.0, double 0.0, double 0.0,\
-                           double [Stage1.bufVecD.x], double [Stage1.bufVecD.y], double [Stage1.bufVecD.z],\
+        ;invoke  gluLookAt, double [Stage1.cameraPosBufVecD.x], double [Stage1.cameraPosBufVecD.y], double [Stage1.cameraPosBufVecD.z],\
+        ;                   double [Stage1.pointPosBufVecD.x], double [Stage1.pointPosBufVecD.y], double [Stage1.pointPosBufVecD.z],\
+        ;                   double 0.0, double 1.0, double 0.0
+        invoke  gluLookAt, double [Stage1.cameraPos.x], double [Stage1.cameraPos.y], double [Stage1.cameraPos.z],\
+                           double [Stage1.pointPos.x], double [Stage1.pointPos.y], double [Stage1.pointPos.z],\
                            double 0.0, double 1.0, double 0.0
+
 
         stdcall Stars.Draw, starsData
 
