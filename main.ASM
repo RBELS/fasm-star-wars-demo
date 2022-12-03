@@ -125,30 +125,7 @@ proc WindowProc uses ebx esi edi, hwnd,wmsg,wparam,lparam
         invoke  glClearColor, 0.0, 0.0, 0.02745, 1.0f
         invoke  glClear,GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT
 
-        stdcall getStage
-.STAGE1:
-        cmp     eax, 1
-        jne     .STAGE2
-
         stdcall drawStage1
-
-        jmp     .STAGE_END
-.STAGE2:
-        cmp     eax, 2
-        jne     .STAGE0
-
-        stdcall drawStage2
-
-        jmp     .STAGE_END
-.STAGE0:
-
-.STAGE_END:
-
-
-
-
-
-
 
 
 .wKey:

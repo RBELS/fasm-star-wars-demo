@@ -28,8 +28,13 @@ proc    Ticks.Update
         invoke  GetTickCount
         sub     eax, [startTicks]
 
+        cmp     eax, 440 * 100
+        jb      .NO_LOOP
+        stdcall Ticks.Init
+.NO_LOOP:
+
         ;to rewind scene
-        add     eax, 0 * 100
+        ;add     eax, 0 * 100
         ;to rewind scene
 
         mov     [ticks], eax
