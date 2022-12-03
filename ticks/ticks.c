@@ -29,7 +29,7 @@ proc    Ticks.Update
         sub     eax, [startTicks]
 
         ;to rewind scene
-        add     eax, 170 * 100
+        add     eax, 0 * 100
         ;to rewind scene
 
         mov     [ticks], eax

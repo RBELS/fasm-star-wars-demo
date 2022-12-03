@@ -1,5 +1,5 @@
 STAGE1_BEGIN    equ     0.0
-STAGE1_END      equ     300.0
+STAGE1_END      equ     400.0
 
 STAGE2_BEGIN    equ     300.0
 STAGE2_END      equ     500.0
