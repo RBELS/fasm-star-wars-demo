@@ -500,3 +500,16 @@ proc setCameraToTie
         ret
 endp
 
+proc initScreenFields
+
+        invoke GetSystemMetrics, SM_CXSCREEN
+        mov    [Screen.width], eax
+        invoke GetSystemMetrics, SM_CYSCREEN
+        mov    [Screen.height], eax
+
+        fild    dword [Screen.width]
+        fidiv   dword [Screen.height]
+        fstp    qword [Screen.aspect]
+
+endp
+

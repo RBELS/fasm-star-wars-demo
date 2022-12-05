@@ -15,7 +15,7 @@ proc    drawStage1
 
         invoke  glMatrixMode, GL_PROJECTION
         invoke  glLoadIdentity
-        invoke  gluPerspective, double FOV, double [aspect], double Z_NEAR, double Z_FAR
+        invoke  gluPerspective, double FOV, double [Screen.aspect], double Z_NEAR, double Z_FAR
 
         ;stdcall copyVecDtoD, Stage1.cameraPosBufVecD, Stage1.cameraPos
         ;stdcall mulVecD, Stage1.cameraPosBufVecD, 0.05
